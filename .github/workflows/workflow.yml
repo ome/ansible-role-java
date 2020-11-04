@@ -1,0 +1,43 @@
+---
+name: Build
+# yamllint disable-line rule:truthy
+on:
+  push:
+  pull_request:
+
+jobs:
+
+  list-scenarios:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.listscenarios.outputs.scenarios }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          pwd
+          ls -l
+      - id: listscenarios
+        uses: manics/action-ansible-molecule-list-scenarios@main
+
+  test:
+    name: Test
+    needs:
+      - list-scenarios
+    runs-on: ubuntu-latest
+    strategy:
+      # Keep running so we can see if other tests pass
+      fail-fast: false
+      matrix:
+        scenario: ${{fromJson(needs.list-scenarios.outputs.matrix)}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - name: Install dependencies
+        run: python -mpip install "ome-ansible-molecule<0.5"
+      - name: Run tests
+        run: molecule test -s ${{ matrix.scenario }}
+
+# notifications:
+#   webhooks: https://galaxy.ansible.com/api/v1/notifications/
