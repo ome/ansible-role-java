@@ -31,7 +31,7 @@ jobs:
         with:
           path: "${{ github.repository }}"
       - name: molecule
-        uses: manics/ome-ansible-molecule@action
+        uses: manics/ome-ansible-molecule@91e88bf
         with:
           scenario: ${{ matrix.scenario }}
 
