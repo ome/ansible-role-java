@@ -1,9 +1,11 @@
 ---
-name: Build
+name: Molecule
 # yamllint disable-line rule:truthy
 on:
   push:
   pull_request:
+  schedule:
+    - cron: '29 21 * * 0'
 
 jobs:
 
