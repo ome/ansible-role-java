@@ -12,6 +12,36 @@
     state: present
   with_items: "{{ java_versions }}"
 
+- name: system packages | install temurin java (ubuntu)
+  when: java_temurin
+  become: true
+  block:
+    - ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400
+        pkg:
+          - wget
+          - apt-transport-https
+          - gpg
+        state: present
+
+    - ansible.builtin.apt_key:
+        url: https://packages.adoptium.net/artifactory/api/gpg/key/public
+        state: present
+
+    - ansible.builtin.apt_repository:
+        repo: "deb https://packages.adoptium.net/artifactory/deb {{ ansible_facts.distribution_release }} main"
+        filename: "adoptium"
+        state: present
+        update_cache: true
+
+    - ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400
+        name: temurin-{{ java_backwards_compatibility_version.debian[item] | default(item) }}-jdk
+        state: present
+      with_items: "{{ java_versions }}"
+
 - name: system packages | install java jdk (ubuntu)
   become: true
   ansible.builtin.apt:
@@ -21,5 +51,5 @@
       openjdk-{{ java_backwards_compatibility_version.debian[item] |
       default(item) }}-jdk
     state: present
-  when: java_jdk_install
+  when: java_jdk_install and not java_temurin
   with_items: "{{ java_versions }}"

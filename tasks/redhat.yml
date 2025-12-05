@@ -1,6 +1,26 @@
 ---
 # tasks file for roles/java
 
+- name: repository | copy adoptium repo file (rockylinux)
+  become: true
+  ansible.builtin.copy:
+    src: adoptium.repo
+    dest: /etc/yum.repos.d/adoptium.repo
+    owner: root
+    group: root
+    mode: "0644"
+  when: java_temurin
+
+- name: system packages | install temurin java jre (rockylinux)
+  become: true
+  ansible.builtin.dnf:
+    name: >-
+      temurin-{{ java_backwards_compatibility_version.redhat[item] |
+      default(item) }}-jdk
+    state: present
+  when: java_temurin
+  with_items: "{{ java_versions }}"
+
 - name: system packages | install java jre (rockylinux)
   become: true
   ansible.builtin.dnf:
@@ -8,6 +28,7 @@
       java-{{ java_backwards_compatibility_version.redhat[item] |
       default(item) }}-openjdk
     state: present
+  when: not java_temurin
   with_items: "{{ java_versions }}"
 
 - name: system packages | install java jdk (rockylinux)
@@ -17,5 +38,5 @@
       java-{{ java_backwards_compatibility_version.redhat[item] |
       default(item) }}-openjdk-devel
     state: present
-  when: java_jdk_install
+  when: java_jdk_install and not java_temurin
   with_items: "{{ java_versions }}"

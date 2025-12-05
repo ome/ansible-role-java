@@ -16,6 +16,8 @@ platforms:
     image: ubuntu:22.04
   - name: java-jdk11
     image: ubuntu:22.04
+  - name: java-11-temurin
+    image: ubuntu:22.04
 provisioner:
   name: ansible
   playbooks:
@@ -33,6 +35,10 @@ provisioner:
         java_versions:
           - "11"
         java_jdk_install: true
+      java-11-temurin:
+        java_temurin: true
+        java_versions:
+          - "11"
 
 scenario:
   name: ubuntu-2204

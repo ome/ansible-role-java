@@ -7,3 +7,6 @@ java_versions:
 
 # Install JDKs corresponding to JREs?
 java_jdk_install: false
+
+# Use Temuriun (Adoptium) Java
+java_temurin: false

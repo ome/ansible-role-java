@@ -16,6 +16,8 @@ platforms:
     image: rockylinux:9
   - name: java-jdk11
     image: rockylinux:9
+  - name: java-11-temurin
+    image: rockylinux:9
 provisioner:
   name: ansible
   playbooks:
@@ -33,6 +35,10 @@ provisioner:
         java_versions:
           - "11"
         java_jdk_install: true
+      java-11-temurin:
+        java_temurin: true
+        java_versions:
+          - "11"
 
 scenario:
   name: rockylinux-9
